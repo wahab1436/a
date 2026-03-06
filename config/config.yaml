@@ -2,7 +2,7 @@ system:
   name: "Financial Risk Intelligence System"
   version: "2.0.0"
 
-
+data:
   assets:
     - "SPY"
     - "QQQ"
@@ -22,14 +22,14 @@ models:
     forecast_horizon: 7
   risk_weights:
     volatility: 0.4
-    regime:0.3
+    regime: 0.3
     sentiment: 0.2
     drawdown: 0.1
 
 llm:
   provider: "google_gemini"
   model: "gemini-pro"
-  api_key: ""
+  # Key is loaded from environment variable GOOGLE_API_KEY
   use_local_fallback: true
 
 logging:
