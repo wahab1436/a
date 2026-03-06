@@ -4,6 +4,10 @@ import plotly.graph_objects as go
 import sys
 import os
 import yaml
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -18,7 +22,8 @@ from risk_engine.risk_calculator import RiskScoringEngine
 from llm_reports.report_generator import LLMReportGenerator
 
 # Load Config
-with open('config/config.yaml', 'r') as f:
+config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'config.yaml')
+with open(config_path, 'r') as f:
     config = yaml.safe_load(f)
 
 st.set_page_config(page_title="Financial Risk Intelligence", layout="wide")
@@ -46,8 +51,8 @@ def main():
     sidebar = st.sidebar
     selected_asset = sidebar.selectbox("Select Asset", config['data']['assets'])
     
-    # API Key Input
-    api_key = sidebar.text_input("Google Gemini API Key (Optional)", type="password", value=config['llm'].get('api_key', ''))
+    # API Key Input (Overrides .env if provided)
+    api_key = sidebar.text_input("Google Gemini API Key", type="password", value=os.getenv("GOOGLE_API_KEY", ""))
     
     if sidebar.button("Run Analysis"):
         with st.spinner("Fetching data and computing risk metrics..."):
@@ -65,8 +70,6 @@ def main():
                 df['forecasted_volatility'] = vol_model.predict(df)
                 
                 # 3. Sentiment (Local FinBERT)
-                # For demo stability, we simulate sentiment based on recent returns if news fetch fails
-                # In production, use NewsIngestor
                 df['sentiment_index'] = 0.0 
                 df['sentiment_index'] = df['log_return'].rolling(5).mean().fillna(0)
                 
