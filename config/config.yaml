@@ -1,0 +1,37 @@
+system:
+  name: "Financial Risk Intelligence System"
+  version: "2.0.0"
+
+
+  assets:
+    - "SPY"
+    - "QQQ"
+    - "BTC-USD"
+    - "^VIX"
+  start_date: "2020-01-01"
+  storage_path: "data/raw"
+  db_connection: "sqlite:///data/financial_risk.db"
+  news_feeds:
+    - "https://finance.yahoo.com/news/rssindex"
+    - "https://www.investing.com/rss/news.rss"
+
+models:
+  regime:
+    n_states: 3
+  volatility:
+    forecast_horizon: 7
+  risk_weights:
+    volatility: 0.4
+    regime:0.3
+    sentiment: 0.2
+    drawdown: 0.1
+
+llm:
+  provider: "google_gemini"
+  model: "gemini-pro"
+  api_key: ""
+  use_local_fallback: true
+
+logging:
+  level: "INFO"
+  file: "logs/system.log"
